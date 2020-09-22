@@ -1,0 +1,7 @@
+---
+title: "LECTURE4_power_simR"
+author: "Anders Hjulmand"
+date: "9/22/2020"
+output: html_document
+---
+
