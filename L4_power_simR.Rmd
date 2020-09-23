@@ -5,3 +5,94 @@ date: "9/22/2020"
 output: html_document
 ---
 
+```{r}
+#Packages and data
+pacman::p_load(simr, tidyverse,lme4)
+
+df <- read_csv("data_clean.csv")
+
+#cleaning NA
+df <- df %>% 
+  filter(is.na(df$CHI_MLU) == F)
+
+```
+
+```{r}
+# model
+m1 <- lme4::lmer(types_CHI ~ Visit + Diagnosis + (1+Visit|Child.ID), df, REML = FALSE)
+summary(m1)
+
+```
+
+```{r}
+powerV <- powerSim(m1, simr::fixed("Visit"), nsim = 50)
+
+powerV
+
+```
+
+```{r}
+#deifning effect size
+fixef(m1)["Visit"] <- 10
+
+fixef(m1)["DiagnosisTD"] <- 30
+summary(m1)
+```
+```{r}
+#Extending da kids
+m2 <- simr::extend(m1, along = "Child.ID", n=120)
+summary(m2)
+
+
+```
+
+
+```{r}
+########################## PLOTTING POWER CURVE ####################################
+powerCurveV <- powerCurve(m1, simr::fixed("Visit"), along = "Child.ID", nsim = 10)
+powerCurveV
+
+plot(powerCurveV)
+```
+
+
+
+```{r}
+#here we use model m2, because we wanna see the power of more kiiiids
+powerCurveD_5 <- powerCurve(m2, simr::fixed("Diagnosis"), along = "Child.ID", nsim = 5)
+powerCurveD_5
+
+plot(powerCurveD_5)
+
+
+
+powerCurveD_50 <- powerCurve(m2, simr::fixed("Diagnosis"), along = "Child.ID", nsim = 50)
+powerCurveD_50
+
+plot(powerCurveD_50)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
